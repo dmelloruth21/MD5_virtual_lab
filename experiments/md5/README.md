@@ -8,7 +8,7 @@ EXP03
 
 MD5 Hash Algorithm
 
-## Description
+## Description  
 
 This experiment demonstrates the working of the MD5 (Message-Digest Algorithm 5)
 hashing algorithm. It accepts a text message as input and generates its
