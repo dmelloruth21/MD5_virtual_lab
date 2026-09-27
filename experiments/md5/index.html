@@ -170,19 +170,62 @@
 
 
         <!-- Simulation -->
-        <section id="simulation" class="tab-content">
+      <section id="simulation" class="tab-content">
+  <h2>MD5 Hash Simulation</h2>
 
-            <h2>Simulation</h2>
+  <p>
+    Enter a message below to generate its 128-bit MD5 hash.
+    Try changing even one character and observe how the resulting
+    hash changes significantly.
+  </p>
 
-            <div class="simulation-controls">
-                <!-- MD5 input and controls will be added later -->
-            </div>
+  <div class="simulation-controls">
 
-            <div class="simulation-output">
-                <!-- Generated MD5 hash will be displayed here later -->
-            </div>
+    <label for="md5Input"><strong>Enter Message:</strong></label>
 
-        </section>
+    <textarea
+      id="md5Input"
+      rows="4"
+      placeholder="Enter your message here..."
+    ></textarea>
+
+    <button id="generateHash" type="button">
+      Generate MD5 Hash
+    </button>
+
+    <button id="clearInput" type="button">
+      Clear
+    </button>
+
+  </div>
+
+  <div class="simulation-output">
+
+    <h3>MD5 Hash Output</h3>
+
+    <div id="hashOutput">
+      Your MD5 hash will appear here.
+    </div>
+
+    <p>
+      <strong>Hash Length:</strong>
+      <span id="hashLength">0</span> hexadecimal characters
+    </p>
+
+  </div>
+
+  <div class="simulation-info">
+
+    <h3>Observe the Avalanche Effect</h3>
+
+    <p>
+      Change a small part of the input message and generate the hash again.
+      You will notice that the resulting MD5 hash changes significantly,
+      even when the input changes only slightly.
+    </p>
+
+  </div>
+</section>
 
 
         <!-- Quiz -->
