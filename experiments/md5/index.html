@@ -1,1 +1,404 @@
-<!-- MD5 Virtual Lab -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MD5 Hash Algorithm</title>
+
+    <!-- Common experiment styles -->
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/experiment.css">
+</head>
+
+<body>
+
+    <main class="experiment-container">
+
+        <!-- Experiment Header -->
+        <header class="experiment-header">
+            <h1>MD5 Hash Algorithm</h1>
+
+            <p>
+                Generate and analyze MD5 hash values for given input messages.
+            </p>
+        </header>
+
+
+        <!-- Aim -->
+        <section>
+            <h2>Aim</h2>
+
+            <p>
+                To generate the MD5 hash value for a given input message and
+                analyze the effect of changing the input on the resulting hash value.
+            </p>
+        </section>
+
+
+        <!-- Objectives -->
+        <section>
+            <h2>Objectives</h2>
+
+            <ul>
+                <li>Understand the basic working of the MD5 hashing algorithm.</li>
+                <li>Generate a 128-bit MD5 hash for a given message.</li>
+                <li>Understand how the input message is processed before hashing.</li>
+                <li>Observe the effect of changing the input message on the hash value.</li>
+                <li>Understand the importance of the avalanche effect in hashing.</li>
+            </ul>
+        </section>
+
+
+        <!-- Tabs -->
+        <nav class="experiment-tabs">
+
+            <button class="tab-button active" data-tab="theory">
+                Theory
+            </button>
+
+            <button class="tab-button" data-tab="procedure">
+                Procedure
+            </button>
+
+            <button class="tab-button" data-tab="simulation">
+                Simulation
+            </button>
+
+            <button class="tab-button" data-tab="quiz">
+                Quiz
+            </button>
+
+        </nav>
+
+
+        <!-- Theory -->
+        <section id="theory" class="tab-content active">
+
+            <h2>Theory</h2>
+
+            <p>
+                MD5 (Message-Digest Algorithm 5) is a cryptographic hash algorithm
+                that takes an input message of arbitrary length and produces a fixed
+                length hash value of 128 bits. The resulting hash is commonly
+                represented as a 32-character hexadecimal string. A hash function
+                processes data in such a way that even a small change in the input
+                produces a significantly different output.
+            </p>
+
+            <p>
+                Before the MD5 compression process begins, the input message is
+                converted into bytes and prepared according to the MD5 preprocessing
+                rules. A single binary 1 bit is appended to the message, followed by
+                enough zero bits so that the message length becomes 448 bits modulo
+                512. The original message length, measured in bits, is then appended
+                as a 64-bit value. As a result, the complete message becomes a
+                multiple of 512 bits.
+            </p>
+
+            <p>
+                Each 512-bit block is divided into sixteen 32-bit words. MD5 maintains
+                four 32-bit working registers, commonly represented as A, B, C and D.
+                These registers are initialized with predefined values. The algorithm
+                then processes each 512-bit block through 64 operations arranged into
+                four rounds. Each round uses a different logical function to combine
+                the current register values with message words and predefined
+                constants. Bitwise operations and left rotations are used during
+                these operations.
+            </p>
+
+            <p>
+                After all 64 operations for a block are completed, the resulting
+                register values are added to the previous state. This process is
+                repeated for every 512-bit block of the message. After the final block
+                has been processed, the four 32-bit register values are combined to
+                form the final 128-bit MD5 digest. The digest is displayed as a
+                lowercase hexadecimal value.
+            </p>
+
+            <p>
+                An important property demonstrated in this experiment is the
+                avalanche effect. When a small change is made to the input message,
+                such as changing or adding one character, the resulting MD5 hash
+                changes significantly. This makes it difficult to determine the
+                original input simply by observing the hash. However, MD5 is no longer
+                considered secure for modern cryptographic applications because
+                practical collision attacks have been demonstrated. Therefore, this
+                experiment focuses on understanding the working and properties of the
+                algorithm rather than recommending MD5 for secure password storage or
+                other modern security applications.
+            </p>
+
+        </section>
+
+
+        <!-- Procedure -->
+        <section id="procedure" class="tab-content">
+
+            <h2>Procedure</h2>
+
+            <ol>
+                <li>
+                    Open the MD5 Hash Algorithm experiment.
+                </li>
+
+                <li>
+                    Enter a message in the input field provided in the simulation.
+                </li>
+
+                <li>
+                    Run the MD5 hashing operation to generate the hash value.
+                </li>
+
+                <li>
+                    Observe the generated 128-bit MD5 hash represented as a
+                    32-character hexadecimal string.
+                </li>
+
+                <li>
+                    Change the input message slightly, for example by adding,
+                    removing, or changing one character.
+                </li>
+
+                <li>
+                    Generate the hash again and compare the new hash with the
+                    previous result to observe the effect of changing the input.
+                </li>
+            </ol>
+
+        </section>
+
+
+        <!-- Simulation -->
+      <section id="simulation" class="tab-content">
+  <h2>MD5 Hash Simulation</h2>
+
+  <p>
+    Enter a message below to generate its 128-bit MD5 hash.
+    Try changing even one character and observe how the resulting
+    hash changes significantly.
+  </p>
+
+  <div class="simulation-controls">
+
+    <label for="md5Input"><strong>Enter Message:</strong></label>
+
+    <textarea
+      id="md5Input"
+      rows="4"
+      placeholder="Enter your message here..."
+    ></textarea>
+
+    <button id="generateHash" type="button">
+      Generate MD5 Hash
+    </button>
+
+    <button id="clearInput" type="button">
+      Clear
+    </button>
+
+  </div>
+
+  <div class="simulation-output">
+
+    <h3>MD5 Hash Output</h3>
+
+    <div id="hashOutput">
+      Your MD5 hash will appear here.
+    </div>
+
+    <p>
+      <strong>Hash Length:</strong>
+      <span id="hashLength">0</span> hexadecimal characters
+    </p>
+
+  </div>
+
+  <div class="simulation-info">
+
+    <h3>Observe the Avalanche Effect</h3>
+
+    <p>
+      Change a small part of the input message and generate the hash again.
+      You will notice that the resulting MD5 hash changes significantly,
+      even when the input changes only slightly.
+    </p>
+
+  </div>
+</section>
+
+
+        <!-- Quiz -->
+        <section id="quiz" class="tab-content">
+
+            <h2>Quiz</h2>
+
+            <p>
+                Test your understanding of the MD5 hashing algorithm.
+            </p>
+
+            <!-- Quiz questions-->
+            <div class="quiz-container">
+
+    <!-- Question 1 -->
+    <div class="quiz-question">
+        <p><strong>1. What is the output size of an MD5 hash?</strong></p>
+
+        <label>
+            <input type="radio" name="q1" value="64">
+            64 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="128">
+            128 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="256">
+            256 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="512">
+            512 bits
+        </label>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="quiz-question">
+        <p><strong>2. What byte is appended to begin the MD5 padding process?</strong></p>
+
+        <label>
+            <input type="radio" name="q2" value="00">
+            0x00
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="01">
+            0x01
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="80">
+            0x80
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="FF">
+            0xFF
+        </label>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="quiz-question">
+        <p><strong>3. What is the size of an MD5 processing block?</strong></p>
+
+        <label>
+            <input type="radio" name="q3" value="128">
+            128 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q3" value="256">
+            256 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q3" value="512">
+            512 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q3" value="1024">
+            1024 bits
+        </label>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="quiz-question">
+        <p><strong>4. How many rounds are performed for each MD5 block?</strong></p>
+
+        <label>
+            <input type="radio" name="q4" value="16">
+            16
+        </label><br>
+
+        <label>
+            <input type="radio" name="q4" value="32">
+            32
+        </label><br>
+
+        <label>
+            <input type="radio" name="q4" value="64">
+            64
+        </label><br>
+
+        <label>
+            <input type="radio" name="q4" value="128">
+            128
+        </label>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="quiz-question">
+        <p><strong>5. What happens when even a small change is made to the input?</strong></p>
+
+        <label>
+            <input type="radio" name="q5" value="same">
+            The hash remains the same
+        </label><br>
+
+        <label>
+            <input type="radio" name="q5" value="small">
+            Only one or two characters change
+        </label><br>
+
+        <label>
+            <input type="radio" name="q5" value="significant">
+            The hash changes significantly
+        </label><br>
+
+        <label>
+            <input type="radio" name="q5" value="length">
+            The hash becomes twice as long
+        </label>
+    </div>
+
+    <button id="submitQuiz" type="button">
+        Submit Quiz
+    </button>
+
+    <button id="retryQuiz" type="button" style="display: none;">
+        Retry Quiz
+    </button>
+
+    <p id="quizResult"></p>
+
+</div>
+
+        </section>
+
+
+        <!-- References -->
+        <section>
+            <h2>References</h2>
+
+            <ul>
+                <li>
+                    RFC 1321 – The MD5 Message-Digest Algorithm.
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+
+    <!-- Common experiment functionality -->
+    <script src="../../js/common.js"></script>
+
+    <!-- Local MD5 functionality -->
+    <script src="script.js"></script>
+
+</body>
+</html>
