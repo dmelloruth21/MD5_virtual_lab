@@ -67,6 +67,8 @@ The implementation should be tested using known MD5 input-output pairs.
 | `hello` | `5d41402abc4b2a76b9719d911017c592` |
 | `abc` | `900150983cd24fb0d6963f7d28e17f72` |
 
+The simulation also demonstrates the avalanche effect by changing a small part of an input message and observing the resulting change in the MD5 hash.
+
 The experiment should also be tested by making a small change to an input
 message and observing that the resulting hash changes significantly.
 
