@@ -194,7 +194,145 @@
                 Test your understanding of the MD5 hashing algorithm.
             </p>
 
-            <!-- Quiz questions will be added later -->
+            <!-- Quiz questions-->
+            <div class="quiz-container">
+
+    <!-- Question 1 -->
+    <div class="quiz-question">
+        <p><strong>1. What is the output size of an MD5 hash?</strong></p>
+
+        <label>
+            <input type="radio" name="q1" value="64">
+            64 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="128">
+            128 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="256">
+            256 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q1" value="512">
+            512 bits
+        </label>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="quiz-question">
+        <p><strong>2. What byte is appended to begin the MD5 padding process?</strong></p>
+
+        <label>
+            <input type="radio" name="q2" value="00">
+            0x00
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="01">
+            0x01
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="80">
+            0x80
+        </label><br>
+
+        <label>
+            <input type="radio" name="q2" value="FF">
+            0xFF
+        </label>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="quiz-question">
+        <p><strong>3. What is the size of an MD5 processing block?</strong></p>
+
+        <label>
+            <input type="radio" name="q3" value="128">
+            128 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q3" value="256">
+            256 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q3" value="512">
+            512 bits
+        </label><br>
+
+        <label>
+            <input type="radio" name="q3" value="1024">
+            1024 bits
+        </label>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="quiz-question">
+        <p><strong>4. How many rounds are performed for each MD5 block?</strong></p>
+
+        <label>
+            <input type="radio" name="q4" value="16">
+            16
+        </label><br>
+
+        <label>
+            <input type="radio" name="q4" value="32">
+            32
+        </label><br>
+
+        <label>
+            <input type="radio" name="q4" value="64">
+            64
+        </label><br>
+
+        <label>
+            <input type="radio" name="q4" value="128">
+            128
+        </label>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="quiz-question">
+        <p><strong>5. What happens when even a small change is made to the input?</strong></p>
+
+        <label>
+            <input type="radio" name="q5" value="same">
+            The hash remains the same
+        </label><br>
+
+        <label>
+            <input type="radio" name="q5" value="small">
+            Only one or two characters change
+        </label><br>
+
+        <label>
+            <input type="radio" name="q5" value="significant">
+            The hash changes significantly
+        </label><br>
+
+        <label>
+            <input type="radio" name="q5" value="length">
+            The hash becomes twice as long
+        </label>
+    </div>
+
+    <button id="submitQuiz" type="button">
+        Submit Quiz
+    </button>
+
+    <button id="retryQuiz" type="button" style="display: none;">
+        Retry Quiz
+    </button>
+
+    <p id="quizResult"></p>
+
+</div>
 
         </section>
 
