@@ -355,3 +355,52 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+/* =========================================================
+   MD5 SIMULATION UI
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("md5Input");
+    const generateButton = document.getElementById("generateHash");
+    const clearButton = document.getElementById("clearInput");
+    const hashOutput = document.getElementById("hashOutput");
+    const hashLength = document.getElementById("hashLength");
+
+    // Stop if simulation elements are not present
+    if (
+        !input ||
+        !generateButton ||
+        !clearButton ||
+        !hashOutput ||
+        !hashLength
+    ) {
+        return;
+    }
+
+
+    // Generate MD5 hash
+    generateButton.addEventListener("click", function () {
+
+        const message = input.value;
+
+        const hash = md5(message);
+
+        hashOutput.textContent = hash;
+
+        hashLength.textContent = hash.length;
+    });
+
+
+    // Clear input and output
+    clearButton.addEventListener("click", function () {
+
+        input.value = "";
+
+        hashOutput.textContent =
+            "Your MD5 hash will appear here.";
+
+        hashLength.textContent = "0";
+    });
+
+});
