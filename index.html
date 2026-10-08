@@ -1,452 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MD5 Hash Algorithm Virtual Lab - Fr. CRCE Cryptography Laboratory. Generate, visualize and analyze 128-bit MD5 digests with avalanche effect heatmap.">
-    <title>MD5 Hash Algorithm | Fr. CRCE Virtual Cryptography Lab</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div class="lab-experiment-container">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MD5 Hash Algorithm - Fr. CRCE Virtual Cryptography Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="lab-experiment-container">
 
-      <!-- Page Header -->
-      <div class="lab-page-header">
-        <div class="lab-page-kicker">EXP01 &middot; Group A &middot; Cryptographic Security Systems</div>
-        <div class="lab-page-nav">
-          <button type="button" class="lab-nav-btn active" data-tab="objective">Objective</button>
-          <button type="button" class="lab-nav-btn" data-tab="theory">Theory</button>
-          <button type="button" class="lab-nav-btn" data-tab="procedure">Procedure</button>
-          <button type="button" class="lab-nav-btn" data-tab="simulation">Simulation</button>
-          <button type="button" class="lab-nav-btn" data-tab="references">References</button>
+    <!-- ================================================================
+         SECTION 1: OBJECTIVE
+         ================================================================ -->
+    <section id="objective" class="lab-section">
+      <span class="lab-section-tag">Section 1 &bull; Objective</span>
+      <h1 class="lab-section-title">MD5 Hash Algorithm</h1>
+      <div class="lab-callout">
+        <strong>Aim:</strong> To implement, trace, and evaluate the MD5 (Message-Digest Algorithm 5)
+        cryptographic hashing algorithm; to examine message preprocessing, 512-bit block partitioning,
+        and 64-step non-linear compression rounds; and to quantitatively demonstrate the Avalanche Effect
+        through interactive simulation.
+      </div>
+      <div class="obj-grid">
+        <div class="obj-card">
+          <div class="obj-num">1</div>
+          <div>
+            <strong>Message Preprocessing</strong>
+            <p>Understand UTF-8 byte conversion, 0x80 padding, zero-padding to 448 mod 512, and 64-bit little-endian length appending.</p>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">2</div>
+          <div>
+            <strong>64-Round Compression</strong>
+            <p>Trace 4 distinct non-linear rounds using auxiliary Boolean functions F, G, H, I with constants K[i] and shifts S[i].</p>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">3</div>
+          <div>
+            <strong>Register State Transitions</strong>
+            <p>Observe the evolution of four 32-bit chaining variables A, B, C, D via Merkle-Damgard feed-forward accumulation.</p>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">4</div>
+          <div>
+            <strong>Avalanche Effect Analysis</strong>
+            <p>Quantify bitwise Hamming distances and verify the Strict Avalanche Criterion showing approximately 50% bit diffusion.</p>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="obj-num">5</div>
+          <div>
+            <strong>Security and Cryptanalysis</strong>
+            <p>Evaluate collision vulnerabilities and understand why MD5 is deprecated per RFC 6151 and NIST SP 800-131A.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SECTION 2: THEORY
+         ================================================================ -->
+    <section id="theory" class="lab-section">
+      <span class="lab-section-tag">Section 2 &bull; Theory</span>
+      <h2 class="lab-section-title">MD5 Algorithm - Theory</h2>
+
+      <div class="theory-card">
+        <h3>1. Introduction and Overview</h3>
+        <p>
+          The MD5 Message-Digest Algorithm is an iterated cryptographic hash function designed by Ronald Rivest of MIT
+          in 1991 and specified in RFC 1321. MD5 processes an arbitrary-length message and produces a fixed-size
+          128-bit (16-byte) message digest, conventionally represented as a 32-character lowercase hexadecimal string.
+        </p>
+        <div class="lab-callout">
+          <strong>Core Property:</strong> A cryptographic hash function is a deterministic one-way mapping.
+          For any message M, computing MD5(M) is straightforward, but inverting the digest to find M is computationally
+          intractable (preimage resistance).
         </div>
       </div>
 
-      <!-- ================================================================
-           SECTION 1: OBJECTIVE
-           ================================================================ -->
-      <section id="objective" class="lab-section">
-        <span class="lab-section-tag">Objective</span>
-        <h1 class="lab-section-title">MD5 Hash Algorithm</h1>
+      <div class="theory-card">
+        <h3>2. Preprocessing and Padding (RFC 1321)</h3>
+        <p>MD5 processes data in blocks of 512 bits (64 bytes, sixteen 32-bit words). Padding ensures the bit length satisfies:</p>
+        <div class="code-box">Length (bits) &equiv; 448 (mod 512)</div>
+        <p>Padding is performed in four deterministic stages:</p>
+        <ol>
+          <li><strong>Append Padding Bits:</strong> A single &apos;1&apos; bit (byte 0x80) is appended directly after the message payload.</li>
+          <li><strong>Append Zero Bits:</strong> Between 0 and 511 zero bits (0x00 bytes) are added until message length is 64 bits short of a multiple of 512.</li>
+          <li><strong>Append Length:</strong> A 64-bit representation of the original message length (in bits, modulo 2^64) is appended in little-endian byte ordering.</li>
+          <li><strong>Block Division:</strong> The padded sequence is partitioned into N consecutive 512-bit blocks (M[0], M[1], ..., M[N-1]).</li>
+        </ol>
+      </div>
+
+      <div class="theory-card">
+        <h3>3. Four 32-Bit Working Registers</h3>
+        <p>MD5 maintains an internal state consisting of four 32-bit registers (A, B, C, D) initialized to standard constants (RFC 1321):</p>
+        <div class="reg-grid">
+          <div class="reg-card"><span class="reg-label">Register A</span><code>0x67452301</code></div>
+          <div class="reg-card"><span class="reg-label">Register B</span><code>0xefcdab89</code></div>
+          <div class="reg-card"><span class="reg-label">Register C</span><code>0x98badcfe</code></div>
+          <div class="reg-card"><span class="reg-label">Register D</span><code>0x10325476</code></div>
+        </div>
+      </div>
+
+      <div class="theory-card">
+        <h3>4. Four Nonlinear Compression Rounds</h3>
+        <p>Each 512-bit block undergoes 64 operations organized into 4 rounds of 16 operations each. Each round utilizes a unique bitwise auxiliary function:</p>
+        <table class="lab-table">
+          <thead>
+            <tr>
+              <th>Round</th>
+              <th>Auxiliary Function</th>
+              <th>Mathematical Formulation</th>
+              <th>Operation Range</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Round 1</td>
+              <td>F(X, Y, Z)</td>
+              <td>(X &amp; Y) | (~X &amp; Z)</td>
+              <td>Steps 0 to 15</td>
+            </tr>
+            <tr>
+              <td>Round 2</td>
+              <td>G(X, Y, Z)</td>
+              <td>(X &amp; Z) | (Y &amp; ~Z)</td>
+              <td>Steps 16 to 31</td>
+            </tr>
+            <tr>
+              <td>Round 3</td>
+              <td>H(X, Y, Z)</td>
+              <td>X ^ Y ^ Z</td>
+              <td>Steps 32 to 47</td>
+            </tr>
+            <tr>
+              <td>Round 4</td>
+              <td>I(X, Y, Z)</td>
+              <td>Y ^ (X | ~Z)</td>
+              <td>Steps 48 to 63</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 14px;">
+          The step transformation formula updates the registers via:
+        </p>
+        <div class="code-box">A = B + ((A + Function(B, C, D) + X[k] + T[i]) &lt;&lt;&lt; s)</div>
+        <p>
+          where X[k] is a 32-bit sub-block of the message, T[i] is floor(2^32 &times; |sin(i + 1)|), &lt;&lt;&lt; s is circular left rotation, and + denotes addition modulo 2^32.
+        </p>
+      </div>
+
+      <div class="theory-card">
+        <h3>5. Merkle-Damgard Feed-Forward Accumulation</h3>
+        <p>
+          After completing all 64 step operations on block M[i], the resulting register values are added modulo 2^32
+          to the state prior to that block (feed-forward step):
+        </p>
+        <div class="code-box">A = (A + A_prev) mod 2^32;  B = (B + B_prev) mod 2^32;  C = (C + C_prev) mod 2^32;  D = (D + D_prev) mod 2^32;</div>
+        <p>
+          Once all N blocks are processed, the registers A, B, C, D are serialized in little-endian order to produce
+          the final 32-character hexadecimal digest.
+        </p>
+      </div>
+
+      <div class="theory-card">
+        <h3>6. Security and Cryptanalytic Status</h3>
         <div class="lab-callout">
-          <strong>Aim:</strong> To implement, trace, and evaluate the MD5 (Message-Digest Algorithm 5)
-          cryptographic hashing algorithm; to examine message preprocessing, 512-bit block partitioning,
-          and 64-step non-linear compression rounds; and to quantitatively demonstrate the Avalanche Effect
-          through interactive simulation.
+          <strong>Deprecated:</strong> MD5 is no longer cryptographically secure. In 2004, Xiaoyun Wang et al.
+          demonstrated practical collision attacks allowing two distinct inputs to produce identical hashes in minutes.
+          Per RFC 6151 and NIST SP 800-131A, MD5 must NOT be used for digital signatures, certificates, or password hashing.
+          Modern security requires SHA-256, SHA-3, or Argon2id/Bcrypt for passwords.
         </div>
-        <div class="obj-grid">
-          <div class="obj-card">
-            <div class="obj-num">1</div>
-            <div>
-              <strong>Message Preprocessing</strong>
-              <p>Understand UTF-8 byte conversion, 0x80 padding, zero-padding to 448 mod 512, and 64-bit little-endian length appending.</p>
-            </div>
-          </div>
-          <div class="obj-card">
-            <div class="obj-num">2</div>
-            <div>
-              <strong>64-Round Compression</strong>
-              <p>Trace 4 distinct non-linear rounds using auxiliary Boolean functions F, G, H, I with constants K[i] and shifts S[i].</p>
-            </div>
-          </div>
-          <div class="obj-card">
-            <div class="obj-num">3</div>
-            <div>
-              <strong>Register State Transitions</strong>
-              <p>Observe the evolution of four 32-bit chaining variables A, B, C, D via Merkle-Damgard feed-forward accumulation.</p>
-            </div>
-          </div>
-          <div class="obj-card">
-            <div class="obj-num">4</div>
-            <div>
-              <strong>Avalanche Effect Analysis</strong>
-              <p>Quantify bitwise Hamming distances and verify the Strict Avalanche Criterion showing approximately 50% bit diffusion.</p>
-            </div>
-          </div>
-          <div class="obj-card">
-            <div class="obj-num">5</div>
-            <div>
-              <strong>Security and Cryptanalysis</strong>
-              <p>Evaluate collision vulnerabilities and understand why MD5 is deprecated per RFC 6151 and NIST SP 800-131A.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- ================================================================
-           SECTION 2: THEORY
-           ================================================================ -->
-      <section id="theory" class="lab-section" hidden>
-        <span class="lab-section-tag">Theory</span>
-        <div class="lab-section-title">MD5 Algorithm - Theory</div>
+    <!-- ================================================================
+         SECTION 3: PROCEDURE
+         ================================================================ -->
+    <section id="procedure" class="lab-section">
+      <span class="lab-section-tag">Section 3 &bull; Procedure</span>
+      <h2 class="lab-section-title">Laboratory Procedure</h2>
+      <ol class="proc-list">
+        <li>
+          <strong>Initialize the Experiment:</strong>
+          Navigate to the <em>Simulation</em> tab. The default test string <code>abc</code> is pre-loaded to verify against the RFC 1321 standard vector.
+        </li>
+        <li>
+          <strong>Inspect the Digest Output:</strong>
+          Observe the resulting 128-bit hexadecimal hash. For <code>abc</code>, the expected digest is <code>900150983cd24fb0d6963f7d28e17f72</code>. Check the input bit count (24 bits) and 512-bit block count (1 block).
+        </li>
+        <li>
+          <strong>Examine Message Padding:</strong>
+          Switch to the <em>Padding</em> view inside the simulation. Inspect how the original bytes are followed by the <code>0x80</code> delimiter, zeros padded up to bit 448, and the 64-bit little-endian message length.
+        </li>
+        <li>
+          <strong>Trace the Round Buffers:</strong>
+          Switch to the <em>Round State</em> view. Observe the intermediate values of registers A, B, C, and D after Round 1 (F function), Round 2 (G function), Round 3 (H function), and Round 4 (I function).
+        </li>
+        <li>
+          <strong>Evaluate the Avalanche Effect:</strong>
+          Switch to the <em>Avalanche Heatmap</em> view. Modify a single character or bit in the input message and observe the live Hamming distance and bit diffusion percentage across all 128 bits.
+        </li>
+      </ol>
+    </section>
 
-        <div class="theory-card">
-          <h3>1. Introduction</h3>
-          <p>
-            The MD5 Message-Digest Algorithm is an iterated cryptographic hash function designed by Ronald Rivest of MIT
-            in 1991 and specified in RFC 1321. MD5 processes an arbitrary-length message and produces a fixed-size
-            128-bit (16-byte) message digest, conventionally represented as a 32-character lowercase hexadecimal string.
-          </p>
-          <div class="lab-callout">
-            <strong>Core Property:</strong> A cryptographic hash function is a deterministic one-way mapping.
-            For any message M, computing MD5(M) is simple, but inverting the digest is computationally intractable
-            (preimage resistance).
-          </div>
+    <!-- ================================================================
+         SECTION 4: SIMULATION
+         ================================================================ -->
+    <section id="simulation" class="lab-section">
+      <span class="lab-section-tag">Section 4 &bull; Interactive Simulation</span>
+      <h2 class="lab-section-title">MD5 Interactive Simulator</h2>
+
+      <div class="lab-sim-card">
+        <!-- Simulator-scoped view switcher (controls simulator views ONLY, never navigates) -->
+        <div class="lab-sim-views" role="tablist" aria-label="Simulator views">
+          <button type="button" class="lab-sim-viewbtn active" data-view="digest">Digest</button>
+          <button type="button" class="lab-sim-viewbtn" data-view="padding">Padding</button>
+          <button type="button" class="lab-sim-viewbtn" data-view="rounds">Round State</button>
+          <button type="button" class="lab-sim-viewbtn" data-view="avalanche">Avalanche Heatmap</button>
         </div>
 
-        <div class="theory-card">
-          <h3>2. Preprocessing and Padding</h3>
-          <p>MD5 processes data in blocks of 512 bits (64 bytes). Padding is appended as follows:</p>
-          <ul>
-            <li><strong>Append 0x80:</strong> A single '1' bit followed by seven '0' bits (byte 0x80) is appended immediately after the message.</li>
-            <li><strong>Append Zero Bytes:</strong> Zero bytes (0x00) are appended until the byte length satisfies: length mod 64 = 56.</li>
-            <li><strong>Append 64-bit Length:</strong> The original message bit length is appended as an 8-byte little-endian integer.</li>
-          </ul>
-        </div>
+        <label class="lab-field-label" for="sim-input">Input Message (UTF-8 Plaintext)</label>
+        <input id="sim-input" class="lab-input" type="text" value="abc" autocomplete="off" placeholder="Type anything to observe real-time hash state...">
 
-        <div class="theory-card">
-          <h3>3. Four 32-bit State Registers</h3>
-          <p>MD5 uses four 32-bit registers initialized to RFC 1321 constants:</p>
-          <div class="mono-box">
-            A = 0x67452301 &nbsp; B = 0xEFCDAB89 &nbsp; C = 0x98BADCFE &nbsp; D = 0x10325476
+        <!-- View 1: Digest -->
+        <div class="lab-sim-view active" data-viewpanel="digest">
+          <div class="lab-digest-label">128-Bit Resulting Hash (Hexadecimal)</div>
+          <div class="lab-digest" id="sim-digest"></div>
+          <div class="lab-stat-grid">
+            <div class="lab-stat"><span>Input Bits</span><p id="sim-bits"></p></div>
+            <div class="lab-stat"><span>512-bit Blocks</span><p id="sim-blocks"></p></div>
+            <div class="lab-stat"><span>Digest Length</span><p>128 bits (16 bytes)</p></div>
+            <div class="lab-stat"><span>Security Status</span><p class="lab-danger">Broken (Collision vulnerabilities)</p></div>
           </div>
         </div>
 
-        <div class="theory-card">
-          <h3>4. Four-Round Compression (64 Operations)</h3>
-          <p>Each 512-bit block passes through 64 operations across 4 rounds of 16 operations each:</p>
+        <!-- View 2: RFC 1321 Padding -->
+        <div class="lab-sim-view" data-viewpanel="padding">
+          <p class="lab-note">RFC 1321 Specification: Pad with a single &apos;1&apos; bit (0x80), append zero bits until length &equiv; 448 (mod 512), and append the 64-bit message length in little-endian order.</p>
+          <div class="lab-terminal" id="sim-padding"></div>
+          <div class="pad-breakdown-card">
+            <h4>Padding Block Layout (512-bit Block 0)</h4>
+            <div class="pad-segments" id="sim-pad-segments"></div>
+          </div>
+        </div>
+
+        <!-- View 3: Round State Table -->
+        <div class="lab-sim-view" data-viewpanel="rounds">
+          <p class="lab-note">State of 32-bit registers A, B, C, D after each of the 4 compression rounds for the current message block:</p>
           <table class="lab-table">
             <thead>
-              <tr><th>Round</th><th>Ops</th><th>Function</th><th>Formula</th><th>Word Index g</th></tr>
+              <tr>
+                <th>Round / Nonlinear Logic</th>
+                <th>Register A</th>
+                <th>Register B</th>
+                <th>Register C</th>
+                <th>Register D</th>
+              </tr>
             </thead>
-            <tbody>
-              <tr><td>Round 1</td><td>0-15</td><td>F(B,C,D)</td><td>(B AND C) OR (NOT B AND D)</td><td>g = i</td></tr>
-              <tr><td>Round 2</td><td>16-31</td><td>G(B,C,D)</td><td>(B AND D) OR (C AND NOT D)</td><td>g = (5i+1) mod 16</td></tr>
-              <tr><td>Round 3</td><td>32-47</td><td>H(B,C,D)</td><td>B XOR C XOR D</td><td>g = (3i+5) mod 16</td></tr>
-              <tr><td>Round 4</td><td>48-63</td><td>I(B,C,D)</td><td>C XOR (B OR NOT D)</td><td>g = (7i) mod 16</td></tr>
-            </tbody>
-          </table>
-          <div class="mono-box">
-            temp = D; D = C; C = B;<br>
-            B = B + ((A + Func(B,C,D) + K[i] + M[g]) ROTL S[i]) mod 2^32;<br>
-            A = temp;
-          </div>
-        </div>
-
-        <div class="theory-card">
-          <h3>5. Avalanche Effect and Strict Avalanche Criterion</h3>
-          <p>
-            The Strict Avalanche Criterion (SAC) requires that flipping a single input bit must cause approximately
-            50% of the 128 output bits to change. This property is verified in the Simulation tab with the
-            128-bit heatmap comparator.
-          </p>
-        </div>
-
-        <div class="theory-card">
-          <h3>6. Security Deprecation (RFC 6151)</h3>
-          <div class="lab-callout" id="danger-callout">
-            <strong>Warning:</strong> MD5 is cryptographically broken for collision resistance and must NOT be used
-            for digital certificates, SSL/TLS signatures, or password hashing in modern production systems.
-          </div>
-          <p>
-            In 2004, Wang and Yu demonstrated practical collisions. In 2008, chosen-prefix attacks enabled forging
-            rogue SSL Certificate Authorities. In 2012, the Flame malware used MD5 collisions to forge code signatures.
-            Modern systems must use SHA-256, SHA-3, or Argon2id.
-          </p>
-        </div>
-      </section>
-
-      <!-- ================================================================
-           SECTION 3: PROCEDURE
-           ================================================================ -->
-      <section id="procedure" class="lab-section" hidden>
-        <span class="lab-section-tag">Procedure</span>
-        <div class="lab-section-title">Experiment Procedure</div>
-
-        <div class="flow-container">
-          <div class="flow-title">MD5 Algorithm Execution Pipeline</div>
-          <div class="flow-steps">
-            <div class="flow-step"><div class="flow-badge">1</div><div><strong>Plaintext Input</strong><br>Accepts arbitrary-length UTF-8 text string M of length L bits.</div></div>
-            <div class="flow-arrow">&#8595;</div>
-            <div class="flow-step"><div class="flow-badge">2</div><div><strong>UTF-8 Encoding and Padding (0x80 + Zeros)</strong><br>Appends 0x80 byte then zero bytes so total length is congruent to 448 mod 512 bits.</div></div>
-            <div class="flow-arrow">&#8595;</div>
-            <div class="flow-step"><div class="flow-badge">3</div><div><strong>Append 64-bit Length Descriptor</strong><br>Encodes original length L mod 2^64 as two 32-bit little-endian words. Total = N x 512 bits.</div></div>
-            <div class="flow-arrow">&#8595;</div>
-            <div class="flow-step"><div class="flow-badge">4</div><div><strong>Partition into 512-bit Blocks</strong><br>Each 512-bit block is parsed into sixteen 32-bit little-endian words M[0..15].</div></div>
-            <div class="flow-arrow">&#8595;</div>
-            <div class="flow-step"><div class="flow-badge">5</div><div><strong>Four-Round 64-Step Compression</strong><br>Rounds 1-4 with functions F, G, H, I update chaining registers A, B, C, D.</div></div>
-            <div class="flow-arrow">&#8595;</div>
-            <div class="flow-step"><div class="flow-badge">6</div><div><strong>Merkle-Damgard Addition and Serialization</strong><br>Adds final round registers mod 2^32 to block initial state; serializes to 32 hex characters.</div></div>
-          </div>
-        </div>
-
-        <div class="theory-card">
-          <h3>Step-by-Step Lab Instructions</h3>
-          <ol class="proc-list">
-            <li>Open the <strong>Simulation</strong> tab to access the interactive MD5 workspace.</li>
-            <li>Enter an input message (e.g., "abc" or "hello") or choose from the preset chips.</li>
-            <li>Optionally toggle the <strong>Dynamic Salt / Nonce</strong> to test keyed message hashing.</li>
-            <li>Click <strong>Generate MD5 Hash</strong> to run the native JavaScript MD5 algorithm.</li>
-            <li>Examine the diagnostic register cards showing final chaining states A, B, C, D.</li>
-            <li>Scroll to the <strong>MD5 Processing Visualizer</strong> to trace Stages 1 through 6.</li>
-            <li>In the <strong>Avalanche Effect Comparator</strong>, enter two messages differing by 1 character.</li>
-            <li>Observe the <strong>128-Bit Heatmap</strong> verifying approximately 50% bit diffusion.</li>
-            <li>Click the <strong>Quiz</strong> button in the Simulation tab and answer all 10 questions.</li>
-          </ol>
-        </div>
-      </section>
-
-      <!-- ================================================================
-           SECTION 4: SIMULATION
-           ================================================================ -->
-      <section id="simulation" class="lab-section" hidden>
-        <span class="lab-section-tag">Simulation</span>
-        <div class="lab-section-title">Interactive MD5 Hash Generator</div>
-
-        <!-- Input Area -->
-        <div class="sim-card">
-          <label class="sim-label" for="md5Input">Message Input Text:</label>
-          <textarea id="md5Input" class="lab-textarea" placeholder="Type or paste your plaintext message here..." spellcheck="false">abc</textarea>
-
-          <!-- Salt Toggle -->
-          <div class="salt-row">
-            <label class="salt-label">
-              <input type="checkbox" id="enableSaltToggle">
-              <span>Append Dynamic Salt / Nonce to Message</span>
-            </label>
-            <span id="saltBadgeToken" class="salt-badge" style="display:none;">SALT: NONE</span>
-          </div>
-
-          <!-- Quick Presets -->
-          <div class="preset-row">
-            <span class="preset-label">Quick Presets:</span>
-            <button type="button" class="preset-btn" data-preset="abc">"abc"</button>
-            <button type="button" class="preset-btn" data-preset="hello">"hello"</button>
-            <button type="button" class="preset-btn" data-preset="">Empty ("")</button>
-            <button type="button" class="preset-btn" data-preset="abd">"abd"</button>
-            <button type="button" class="preset-btn" data-preset="The quick brown fox jumps over the lazy dog">"quick brown fox"</button>
-          </div>
-
-          <div class="btn-row">
-            <button type="button" id="generateHash" class="lab-btn-primary">Generate MD5 Hash</button>
-            <button type="button" id="clearInput" class="lab-btn-secondary">Clear Input</button>
-          </div>
-        </div>
-
-        <!-- Hash Output -->
-        <div class="hash-output-card" aria-live="polite">
-          <div class="hash-output-label">128-Bit Computed MD5 Digest (32 Hex Characters):</div>
-          <div class="hash-output-row">
-            <span id="hashOutput" class="hash-hex">900150983cd24fb0d6963f7d28e17f72</span>
-            <button type="button" id="copyHashBtn" class="btn-copy">Copy Digest</button>
-          </div>
-        </div>
-
-        <!-- Diagnostics -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Input Characters</div>
-            <div id="statCharCount" class="metric-value">3</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Unpadded Bit Length</div>
-            <div id="statOrigBits" class="metric-value">24 bits</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Padded Stream Size</div>
-            <div id="statPaddedBytes" class="metric-value">64 bytes</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">512-Bit Blocks</div>
-            <div id="statBlockCount" class="metric-value">1 block</div>
-          </div>
-        </div>
-
-        <!-- Registers -->
-        <div class="sim-card">
-          <div class="sim-label">Final Chaining State Registers (A, B, C, D):</div>
-          <div class="regs-grid">
-            <div class="reg-card"><div class="reg-name">Register A</div><div id="regA" class="reg-hex">0x98500190</div></div>
-            <div class="reg-card"><div class="reg-name">Register B</div><div id="regB" class="reg-hex">0x4b2fcd3c</div></div>
-            <div class="reg-card"><div class="reg-name">Register C</div><div id="regC" class="reg-hex">0x7d3f96d6</div></div>
-            <div class="reg-card"><div class="reg-name">Register D</div><div id="regD" class="reg-hex">0x727fe128</div></div>
-          </div>
-        </div>
-
-        <!-- Avalanche Effect Comparator -->
-        <div class="avalanche-section">
-          <div class="avalanche-header">
-            <div class="lab-section-title" style="font-size:20px;margin:0;">Strict Avalanche Effect Comparator</div>
-            <span class="badge-pill">SAC - Strict Avalanche Criterion</span>
-          </div>
-          <div class="lab-callout">
-            Compare two messages differing by as little as 1 character. The Strict Avalanche Criterion guarantees that
-            flipping a single bit propagates through 64 non-linear operations to flip approximately
-            <strong>50% (64 out of 128)</strong> of the digest bits.
-          </div>
-          <div class="av-inputs-grid">
-            <div class="av-col">
-              <label class="sim-label" for="avMsg1">Input Message 1:</label>
-              <input type="text" id="avMsg1" class="lab-input" value="abc">
-              <div id="avHash1" class="av-hash-preview">900150983cd24fb0d6963f7d28e17f72</div>
-            </div>
-            <div class="av-col">
-              <label class="sim-label" for="avMsg2">Input Message 2 (Changed):</label>
-              <input type="text" id="avMsg2" class="lab-input" value="abd">
-              <div id="avHash2" class="av-hash-preview">4911e516e5aa21d327512e0c8b197616</div>
-            </div>
-          </div>
-          <div class="btn-row" style="margin-top:12px;">
-            <button type="button" id="btnRunAvalanche" class="lab-btn-primary">Run Avalanche Analysis</button>
-            <button type="button" id="btnToggleChar" class="lab-btn-secondary">Auto-Mutate Last Character</button>
-          </div>
-          <div class="av-stats-grid">
-            <div class="av-stat-box"><div id="avFlippedCount" class="av-stat-val flipped">63 / 128</div><div class="av-stat-label">Bits Flipped (Hamming Distance)</div></div>
-            <div class="av-stat-box"><div id="avPercent" class="av-stat-val percent">49.22%</div><div class="av-stat-label">Percentage Diffusion (~50% Ideal)</div></div>
-            <div class="av-stat-box"><div id="avHexFlipped" class="av-stat-val">30 / 32</div><div class="av-stat-label">Hex Characters Altered</div></div>
-            <div class="av-stat-box"><div id="avStatus" class="av-stat-val status">Ideal Avalanche Diffusion</div><div class="av-stat-label">Criterion Evaluation</div></div>
-          </div>
-          <div class="bit-matrix-wrapper">
-            <div class="bit-matrix-title">
-              <span>128-Bit Digest Heatmap (Registers A, B, C, D x 32 Bits)</span>
-              <span class="bit-matrix-hint">Hover over any cell to inspect bit index</span>
-            </div>
-            <div id="bitMatrixContainer" class="bit-matrix"></div>
-            <div class="bit-legend">
-              <div class="legend-item"><span class="legend-chip flipped-chip"></span> Flipped Bit (Changed via Avalanche)</div>
-              <div class="legend-item"><span class="legend-chip same-chip"></span> Identical Bit (Unchanged)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Processing Visualizer -->
-        <div class="vis-wrapper">
-          <div class="lab-section-title" style="font-size:20px;">MD5 Processing Visualizer (RFC 1321 Pipeline)</div>
-          <p class="vis-subtitle">Trace the internal step-by-step transformation through the 6 stages of MD5 processing.</p>
-
-          <div class="stage-card">
-            <button type="button" class="stage-toggle open" data-stage="1">
-              <span class="stage-badge">1</span><span>Input Message Specification</span><span class="stage-arrow">&#9660;</span>
-            </button>
-            <div class="stage-body open" id="stage1Body">
-              <p>Raw plaintext message string. Each character is encoded into UTF-8 binary bytes.</p>
-              <div class="mono-box" id="visInputMsg">"abc"</div>
-              <p id="visInputStats">Length: 3 characters | 3 bytes | 24 bits</p>
-            </div>
-          </div>
-
-          <div class="stage-card">
-            <button type="button" class="stage-toggle open" data-stage="2">
-              <span class="stage-badge">2</span><span>UTF-8 Encoding (Hexadecimal Bytes)</span><span class="stage-arrow">&#9660;</span>
-            </button>
-            <div class="stage-body open" id="stage2Body">
-              <p>Hexadecimal representation of each byte before padding is applied.</p>
-              <div class="mono-box" id="visUtf8Bytes">61 62 63</div>
-            </div>
-          </div>
-
-          <div class="stage-card">
-            <button type="button" class="stage-toggle open" data-stage="3">
-              <span class="stage-badge">3</span><span>MD5 Preprocessing and Padding</span><span class="stage-arrow">&#9660;</span>
-            </button>
-            <div class="stage-body open" id="stage3Body">
-              <p>Padding appended so length is congruent to 448 mod 512. Byte 0x80 appended, followed by zeros, then 64-bit length in little-endian.</p>
-              <div class="pad-legend">
-                <span class="pad-original">Original</span>
-                <span class="pad-start">0x80 byte</span>
-                <span class="pad-zeros">Zero Padding</span>
-                <span class="pad-len">64-bit Length</span>
-              </div>
-              <div class="mono-box" id="visPaddedBytes"></div>
-              <p id="visPaddingStats">Total padded size: 64 bytes (512 bits)</p>
-            </div>
-          </div>
-
-          <div class="stage-card">
-            <button type="button" class="stage-toggle open" data-stage="4">
-              <span class="stage-badge">4</span><span>512-Bit Block and 16-Word Division M[0..15]</span><span class="stage-arrow">&#9660;</span>
-            </button>
-            <div class="stage-body open" id="stage4Body">
-              <p>Each 512-bit block is parsed into sixteen 32-bit little-endian words M[0] through M[15].</p>
-              <div id="visBlockContainer"></div>
-            </div>
-          </div>
-
-          <div class="stage-card">
-            <button type="button" class="stage-toggle open" data-stage="5">
-              <span class="stage-badge">5</span><span>Four-Round Compression Breakdown (64 Operations)</span><span class="stage-arrow">&#9660;</span>
-            </button>
-            <div class="stage-body open" id="stage5Body">
-              <p>The 512-bit block is compressed across 4 sequential rounds updating registers A, B, C, D:</p>
-              <div class="rounds-grid">
-                <div class="round-card"><h4>Round 1 (Ops 0-15)</h4><ul><li>F(B,C,D) = (B AND C) OR (NOT B AND D)</li><li>Word Index: g = i</li><li>Rotations: [7, 12, 17, 22]</li></ul><div class="reg-card" style="margin-top:8px;"><span id="visR1State" style="font-size:11px;">calculating...</span></div></div>
-                <div class="round-card"><h4>Round 2 (Ops 16-31)</h4><ul><li>G(B,C,D) = (B AND D) OR (C AND NOT D)</li><li>Word Index: g = (5i+1) mod 16</li><li>Rotations: [5, 9, 14, 20]</li></ul><div class="reg-card" style="margin-top:8px;"><span id="visR2State" style="font-size:11px;">calculating...</span></div></div>
-                <div class="round-card"><h4>Round 3 (Ops 32-47)</h4><ul><li>H(B,C,D) = B XOR C XOR D</li><li>Word Index: g = (3i+5) mod 16</li><li>Rotations: [4, 11, 16, 23]</li></ul><div class="reg-card" style="margin-top:8px;"><span id="visR3State" style="font-size:11px;">calculating...</span></div></div>
-                <div class="round-card"><h4>Round 4 (Ops 48-63)</h4><ul><li>I(B,C,D) = C XOR (B OR NOT D)</li><li>Word Index: g = (7i) mod 16</li><li>Rotations: [6, 10, 15, 21]</li></ul><div class="reg-card" style="margin-top:8px;"><span id="visR4State" style="font-size:11px;">calculating...</span></div></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stage-card">
-            <button type="button" class="stage-toggle open" data-stage="6">
-              <span class="stage-badge">6</span><span>Final 128-Bit Digest Formation</span><span class="stage-arrow">&#9660;</span>
-            </button>
-            <div class="stage-body open" id="stage6Body">
-              <p>Registers from Round 4 are added mod 2^32 to block initial values, then serialized to 32 hex characters:</p>
-              <div class="regs-grid" id="visFinalRegisters"></div>
-              <div class="mono-box" id="visFinalHash" style="color:#34d399;font-weight:700;margin-top:10px;">900150983cd24fb0d6963f7d28e17f72</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quiz Section -->
-        <div class="quiz-wrapper" id="quizSection">
-          <div class="lab-section-title" style="font-size:20px;">Knowledge Check - Self-Assessment Quiz</div>
-          <form id="md5QuizForm" novalidate>
-            <div id="quizContainer"></div>
-            <div class="btn-row" style="margin-top:20px;">
-              <button type="button" id="submitQuiz" class="lab-btn-primary">Submit Quiz</button>
-              <button type="button" id="retryQuiz" class="lab-btn-secondary" style="display:none;">Retry Quiz</button>
-            </div>
-            <div id="quizResult" class="quiz-banner"></div>
-          </form>
-        </div>
-      </section>
-
-      <!-- ================================================================
-           SECTION 5: REFERENCES
-           ================================================================ -->
-      <section id="references" class="lab-section" hidden>
-        <span class="lab-section-tag">References</span>
-        <div class="lab-section-title">References and Further Reading</div>
-        <ol class="ref-list">
-          <li>RFC 1321: R. Rivest, "The MD5 Message-Digest Algorithm", MIT / RSA Data Security, April 1992.</li>
-          <li>RFC 6151: S. Turner, L. Chen, "Updated Security Considerations for MD5 Message-Digest and HMAC-MD5", March 2011.</li>
-          <li>William Stallings, "Cryptography and Network Security: Principles and Practice", Pearson Education.</li>
-          <li>Xiaoyun Wang and Hongbo Yu, "How to Break MD5 and Other Hash Functions", EUROCRYPT 2005, LNCS vol 3494, Springer.</li>
-          <li>NIST SP 800-131A Rev. 2, "Transitioning the Use of Cryptographic Algorithms and Key Lengths", NIST Computer Security Division.</li>
-        </ol>
-        <div class="lab-callout">
-          <strong>Implementation Note:</strong> This experiment uses a 100% native JavaScript MD5 implementation
-          following RFC 1321 with no external libraries, CDNs, or Web Crypto API calls. All computation runs
-          entirely offline in the browser.
-        </div>
-        <div class="theory-card">
-          <h3>RFC 1321 Verification Vectors</h3>
-          <table class="lab-table">
-            <thead><tr><th>Input</th><th>Expected MD5 Digest</th></tr></thead>
-            <tbody>
-              <tr><td>""  (empty)</td><td>d41d8cd98f00b204e9800998ecf8427e</td></tr>
-              <tr><td>"abc"</td><td>900150983cd24fb0d6963f7d28e17f72</td></tr>
-              <tr><td>"hello"</td><td>5d41402abc4b2a76b9719d911017c592</td></tr>
-              <tr><td>"abd"</td><td>4911e516e5aa21d327512e0c8b197616</td></tr>
-              <tr><td>"The quick brown fox jumps over the lazy dog"</td><td>9e107d9d372bb6826bd81d3542a419d6</td></tr>
-            </tbody>
+            <tbody id="sim-rounds"></tbody>
           </table>
         </div>
-      </section>
 
-    </div><!-- end .lab-experiment-container -->
-    <script src="script.js"></script>
-  </body>
+        <!-- View 4: Avalanche Effect Heatmap -->
+        <div class="lab-sim-view" data-viewpanel="avalanche">
+          <p class="lab-note">Strict Avalanche Criterion (SAC): Changing a single input bit must alter approximately 50% (64 bits) of the 128-bit output digest unpredictably.</p>
+          <div class="avalanche-meta-box">
+            <div class="avalanche-meta-row">
+              <span class="meta-label">Original Input:</span>
+              <code id="av-orig-input"></code>
+              <span class="meta-label" style="margin-left:14px;">Modified Input (1 bit flipped):</span>
+              <code id="av-mod-input"></code>
+            </div>
+            <div class="avalanche-metric-row">
+              <div class="lab-stat"><span>Hamming Distance</span><p id="av-dist">0 / 128 bits</p></div>
+              <div class="lab-stat"><span>Bit Flip Diffusion</span><p id="av-percent">0.0%</p></div>
+              <div class="lab-stat"><span>Theoretical Target</span><p>~50.0% (64 bits)</p></div>
+            </div>
+          </div>
+          <div class="avalanche-grid-wrap">
+            <div class="grid-title">128-Bit Output Digest Diffusion Matrix (Green: Unchanged bit, Orange: Flipped bit)</div>
+            <div class="lab-avalanche-grid" id="av-grid"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SECTION 5: REFERENCES
+         ================================================================ -->
+    <section id="references" class="lab-section">
+      <span class="lab-section-tag">Section 5 &bull; References</span>
+      <h2 class="lab-section-title">References and Further Reading</h2>
+      <ul class="ref-list">
+        <li>
+          <a href="https://www.ietf.org/rfc/rfc1321.txt" target="_blank" rel="noopener noreferrer">
+            RFC 1321: The MD5 Message-Digest Algorithm (R. Rivest, MIT LCS &amp; RSA Data Security, 1992)
+          </a>
+        </li>
+        <li>
+          <a href="https://www.ietf.org/rfc/rfc6151.txt" target="_blank" rel="noopener noreferrer">
+            RFC 6151: Updated Security Considerations for the MD5 Message-Digest and HMAC-MD5 (IETF, 2011)
+          </a>
+        </li>
+        <li>
+          <a href="https://link.springer.com/chapter/10.1007/11426639_2" target="_blank" rel="noopener noreferrer">
+            How to Break MD5 and Other Hash Functions (Xiaoyun Wang, Hongbo Yu, EUROCRYPT 2005)
+          </a>
+        </li>
+        <li>
+          <a href="https://csrc.nist.gov/publications/detail/sp/800-131a/rev-2/final" target="_blank" rel="noopener noreferrer">
+            NIST SP 800-131A Rev. 2: Transitioning the Use of Cryptographic Algorithms and Key Lengths
+          </a>
+        </li>
+      </ul>
+      <div class="lab-callout">
+        <strong>Implementation Note:</strong> This experiment uses a pure, self-contained offline JavaScript MD5 engine
+        following RFC 1321 with zero external libraries, CDNs, or Web Crypto API calls. All computations execute
+        100% locally in the browser sandbox.
+      </div>
+    </section>
+
+  </div><!-- end .lab-experiment-container -->
+
+  <script src="script.js"></script>
+</body>
 </html>
