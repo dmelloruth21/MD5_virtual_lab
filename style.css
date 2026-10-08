@@ -14,6 +14,16 @@
 }
 
 /* --------------------------------------------------------------------------
+   Section Visibility (Platform extracts non-sim sections; iframe displays simulation only)
+   -------------------------------------------------------------------------- */
+.lab-experiment-container #objective,
+.lab-experiment-container #theory,
+.lab-experiment-container #procedure,
+.lab-experiment-container #references {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
    Section Cards
    -------------------------------------------------------------------------- */
 .lab-experiment-container .lab-section {
